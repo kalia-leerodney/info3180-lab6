@@ -69,7 +69,7 @@ app.component('news-list', {
     fetch('https://newsapi.org/v2/top-headlines?country=us',
    {
     headers: {
-    'Authorization': 'Bearer <2a7a93618aaa49dca417854ed9b6559c>'
+    'Authorization': 'Bearer 2a7a93618aaa49dca417854ed9b6559c'
     }
    })
     .then(function(response) {
