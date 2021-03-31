@@ -51,4 +51,35 @@ app.component('app-footer', {
   }
 })
 
+app.component('news-list', {
+  name: 'NewsList',
+  template:  `
+  
+    <div class="news">
+        <h2>News</h2>
+        <ul class="news__list">
+            <li class="news__item">News item 1</li>
+            <li class="news__item">News item 2</li>
+            <li class="news__item">News item 3</li>
+        </ul>
+    </div>
+
+  `,
+  created() {
+    fetch('https://newsapi.org/v2/top-headlines?country=us',
+   {
+    headers: {
+    'Authorization': 'Bearer <2a7a93618aaa49dca417854ed9b6559c>'
+    }
+   })
+    .then(function(response) {
+    return response.json();
+    })
+    .then(function(data) {
+    console.log(data);
+    });
+    }
+
+});
+
 app.mount('#app');
