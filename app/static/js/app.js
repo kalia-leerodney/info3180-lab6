@@ -1,10 +1,104 @@
 /* Add your Application JavaScript */
+const NewsList = {
+  name: 'NewsList',
+  template:  `
+  <h2 class="newsheading">News</h2>
+  <div class="form-inline d-flex justify-content-center">
+    <div class="form-group mx-sm-3 mb-2">
+    <label class="sr-only" for="search">Search</label>
+      <input type="search" name="search" v-model="searchTerm"
+    id="search" class="form-control mb-2 mr-sm-2" placeholder="Enter
+    search term here" />
+    <button class="btn btn-primary mb-2" @click="searchNews">Search</button>
+  
+    </div>
+  </div>
+
+    <div class="news">
+       
+        <ul class="news__list">
+        <li v-for="article in articles" class="news__item"> 
+
+        <div class="article"> <h2>{{ article.title }}</h2>
+            <img v-bind:src = 'article.urlToImage'> 
+            {{ article.description }} 
+            </div>
+            </li>    
+        </ul>
+    </div>
+
+    
+  `,
+  created() {
+    let self = this;
+    fetch('https://newsapi.org/v2/top-headlines?country=us',
+   {
+    headers: {
+    'Authorization': 'Bearer <api-key>'
+    }
+   })
+    .then(function(response) {
+    return response.json();
+    })
+    .then(function(data) {
+    console.log(data);
+    self.articles = data.articles;
+    });
+    },
+
+    data() {
+      return {
+      articles: [],
+      searchTerm: ''
+      }
+    },
+    methods: {
+      searchNews() {
+      let self = this;
+      fetch('https://newsapi.org/v2/everything?q='+
+     self.searchTerm + '&language=en', {
+      headers: {
+      'Authorization': 'Bearer <api-key>'
+      }
+     })
+      .then(function(response) {
+      return response.json();
+      })
+      .then(function(data) {
+      console.log(data);
+      self.articles = data.articles;
+      });
+      }
+    }
+};
+
+const Home = {
+  name: 'Home',
+  template: `
+    <div class="home">
+    <img src="/static/images/logo.png" alt="VueJS Logo">
+    <h1>{{ welcome }}</h1>
+    </div>
+  `,
+  data() {
+  return {
+  welcome: 'Hello World! Welcome to VueJS'
+  }
+  }
+ };
+
+
 const app = Vue.createApp({
   data() {
     return {
       welcome: 'Hello World! Welcome to VueJS'
     }
-  }
+  },
+
+    components: {
+    'home': Home,
+    'news-list': NewsList
+    }
 });
 
 app.component('app-header', {
@@ -20,10 +114,10 @@ app.component('app-header', {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <router-link to="/" class="nav-link">Home</router-link>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">News</a>
+                <router-link to="/news" class="nav-link">News</router-link>
                 </li>
               </ul>
             </div>
@@ -51,35 +145,18 @@ app.component('app-footer', {
   }
 })
 
-app.component('news-list', {
-  name: 'NewsList',
-  template:  `
-  
-    <div class="news">
-        <h2>News</h2>
-        <ul class="news__list">
-            <li class="news__item">News item 1</li>
-            <li class="news__item">News item 2</li>
-            <li class="news__item">News item 3</li>
-        </ul>
-    </div>
 
-  `,
-  created() {
-    fetch('https://newsapi.org/v2/top-headlines?country=us',
-   {
-    headers: {
-    'Authorization': 'Bearer 2a7a93618aaa49dca417854ed9b6559c'
-    }
-   })
-    .then(function(response) {
-    return response.json();
-    })
-    .then(function(data) {
-    console.log(data);
-    });
-    }
 
-});
 
+
+ const router = VueRouter.createRouter({
+  history: VueRouter.createWebHistory(),
+  routes: [
+  { path: '/', component: Home },
+  { path: '/news', component: NewsList }
+  ]
+ });
+
+
+app.use(router)
 app.mount('#app');
